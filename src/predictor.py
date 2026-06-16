@@ -6,6 +6,7 @@ Hybrid approach: labeler override for high-confidence cases, ML for everything e
 """
 
 import os
+import re
 import pickle
 import numpy as np
 from src.preprocessor import load_vectorizer
@@ -15,7 +16,6 @@ MODELS_DIR = os.path.join(os.path.dirname(__file__), "..", "models")
 
 CLASS_NAMES = ["Critical", "Warning", "Info", "Normal"]
 
-# Minimum labeler score to trust rule-based override over ML
 OVERRIDE_THRESHOLD = 4
 
 _MODEL_CACHE = {}
@@ -55,6 +55,7 @@ def _get_proba(clf, X) -> np.ndarray:
 def _labeler_score(line: str) -> tuple:
     """Returns (class_idx, score) from the labeler."""
     from src.labeler import _score_patterns, CRITICAL_PATTERNS, WARNING_PATTERNS, INFO_PATTERNS, NORMAL_PATTERNS
+    line = re.sub(r"([a-z])([A-Z])", r"\1 \2", line)
     scores = {
         0: _score_patterns(line, CRITICAL_PATTERNS),
         1: _score_patterns(line, WARNING_PATTERNS),
@@ -69,7 +70,6 @@ def predict_single(log_line: str, model_name: str) -> dict:
     vec = _get_vectorizer()
     clf = _load_model(model_name)
 
-    # Hybrid override — if labeler is confident, trust it
     labeler_class, labeler_score = _labeler_score(log_line)
     if labeler_score >= OVERRIDE_THRESHOLD:
         proba = np.zeros(len(CLASS_NAMES))
@@ -83,7 +83,6 @@ def predict_single(log_line: str, model_name: str) -> dict:
             "source": "rule-based override",
         }
 
-    # ML fallback for ambiguous logs
     X = vec.transform([log_line])
     pred_idx = clf.predict(X)[0]
     proba = _get_proba(clf, X)
