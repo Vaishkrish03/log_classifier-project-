@@ -371,7 +371,7 @@ with tab2:
 
             st.markdown("#### Classification Results")
             st.dataframe(
-                df[["Log Line", "Class", "Confidence (%)"]].style.applymap(color_class, subset=["Class"]),
+                df[["Log Line", "Class", "Confidence (%)"]].style.map(color_class, subset=["Class"]),
                 use_container_width=True,
                 height=350,
             )
