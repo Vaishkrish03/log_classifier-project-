@@ -364,6 +364,33 @@ with tab2:
             df = pd.DataFrame(results)
             df.columns = ["Log Line", "Class", "Class Index", "Confidence (%)"]
 
+            # ── System Overview summary ──────────────────────────────────
+            st.markdown("#### 📊 System Overview")
+
+            total_logs = len(df)
+            class_counts = df["Class"].value_counts()
+
+            st.markdown(f"""
+            <div class="metric-box" style="text-align:left;padding:18px 22px;margin-bottom:14px;">
+                <div style="font-size:13px;color:#888;">Total Logs Processed</div>
+                <div style="font-size:34px;font-weight:700;color:#FAFAFA;">{total_logs}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            overview_cols = st.columns(4)
+            for i, cls in enumerate(["Info", "Warning", "Critical", "Normal"]):
+                count = int(class_counts.get(cls, 0))
+                color = CLASS_COLORS.get(cls, "#888")
+                with overview_cols[i]:
+                    st.markdown(f"""
+                    <div class="metric-box" style="border-top:3px solid {color};">
+                        <div style="font-size:12px;color:#888;letter-spacing:1px;text-transform:uppercase;">{cls}</div>
+                        <div style="font-size:28px;font-weight:700;color:{color};margin-top:4px;">{count}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+            st.markdown("---")
+
             # Color map for display
             def color_class(val):
                 color = CLASS_COLORS.get(val, "#888")
