@@ -16,7 +16,7 @@ MODELS_DIR = os.path.join(os.path.dirname(__file__), "..", "models")
 
 CLASS_NAMES = ["Critical", "Warning", "Info", "Normal"]
 
-OVERRIDE_THRESHOLD = 4
+OVERRIDE_THRESHOLD = 2
 
 _MODEL_CACHE = {}
 _VEC_CACHE = [None]
