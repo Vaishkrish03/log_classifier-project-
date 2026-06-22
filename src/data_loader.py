@@ -82,3 +82,14 @@ def load_dataset(sources: dict = None) -> pd.DataFrame:
     print(f"\n[data_loader] Total samples: {len(df)}")
     print(df["label"].value_counts().rename({0: "Critical", 1: "Warning", 2: "Info", 3: "Normal"}))
     return df
+if __name__ == "__main__":
+    # 1. Run the pipeline to build the structured dataset
+    df = load_dataset()
+    
+    # 2. Print the first 10 rows to the terminal so the guide can see it
+    print("\n--- FIRST 10 STRUCTURED LOGS ---")
+    print(df.head(10))
+    
+    # 3. Export it as a CSV file he can scroll through
+    df.to_csv("final_structured_dataset.csv", index=False)
+    print("\n✅ Dataset exported to 'final_structured_dataset.csv'")
